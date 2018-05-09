@@ -19,7 +19,7 @@ float minR = -2; // minimum Real Value. Graphed on x-axis.
 float maxR = 0.5;    // maximum Real value. Change to a smaller value to zoom in)
 float minI = -1;   // minimum Imaginary value, graphed on y-axis
 float maxI = 1;    // maximum Imaginary value
-int max_iteration = 512;  // Not recursing to infinity, so determines resolution
+int max_iteration = 256;  // Not recursing to infinity, so determines resolution
 int Px, Py, x, y, xtemp, i; 
 float cI, cR, ZI, ZR, oldZR;
 boolean inSet;
@@ -31,6 +31,21 @@ void setup() {
   background(0);    // basic black
 }
 
+void mousePressed()
+  /**
+    Resets the window and begins the loop again to draw the plot
+  */
+  {
+      float deltaX = ((1 - (float) mouseX / width) * (maxR + minR) / 2) + minR;
+      float deltaY = ((1 - (float) mouseY / height) * (maxI - minI) / 2) + minI;
+      println(deltaX, deltaY);
+      minR += deltaX; // shifts in the direction of delta
+      maxR += deltaX;
+      minI += deltaY;
+      maxI += deltaY;
+      loop();
+  }
+  
 void draw() 
 {
   for (int r = 0; r < h; r++)    // for every row of screen pixels
@@ -65,15 +80,16 @@ void draw()
       }
       if (inSet)
       {
-        // Don't need to draw it, background is black already
+        stroke(0);
+        point(c,r);
       }
       else
       {
-        stroke(i, i, i);
+        stroke((i * i) % max_iteration, i, i * log(i));  // playing around with colors!
         point(c,r);
       }
     }
+    noLoop();
+    
   }
-  save("mandlebrot.png");
-  noLoop();
 }
