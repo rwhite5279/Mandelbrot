@@ -33,17 +33,18 @@ void setup() {
 
 void mousePressed()
   /**
-    Resets the window and begins the loop again to draw the plot
+    Zooms in by finding a new minR, maxR, minI, and maxI based on
+    averaging relative to the clickpoint.
   */
   {
-      float deltaX = ((1 - (float) mouseX / width) * (maxR + minR) / 2) + minR;
-      float deltaY = ((1 - (float) mouseY / height) * (maxI - minI) / 2) + minI;
-      println(deltaX, deltaY);
-      minR += deltaX; // shifts in the direction of delta
-      maxR += deltaX;
-      minI += deltaY;
-      maxI += deltaY;
-      loop();
+    // Using Paul Soulanille's average technicque
+    float clickX = (((float) mouseX ) / width) * (maxR - minR) + minR;
+    float clickY = (((float) mouseY ) / height) * (maxI - minI) + minI;
+    minR = (minR + clickX) / 2;
+    maxR = (maxR + clickX) / 2;
+    minI = (minI + clickY) / 2;
+    maxI = (maxI + clickY) / 2;
+    loop(); // restart the loo to draw the new diagram
   }
   
 void draw() 
@@ -85,11 +86,12 @@ void draw()
       }
       else
       {
-        stroke((i * i) % max_iteration, i, i * log(i));  // playing around with colors!
+        stroke((i * i) % max_iteration, i % 256, i * log(i));  // playing around with colors!
         point(c,r);
       }
     }
-    noLoop();
-    
+    noLoop();  // stop after drawing diagram. draw() can be restarted by 
+               // clicking the mouse on a point in the diagram (see
+               // mousePressed() method above)
   }
 }
