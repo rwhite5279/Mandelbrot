@@ -10,7 +10,7 @@
  *     diverge when iterated from n=0.
  * + So, Mandelbrot set values are the black areas in the initial plot.
  * + Non-Mandelbrot values can be colored based on how many iterations it takes them to diverge
- *     from some value. (Confirm.)
+ *     past some value. This value turns out to be 2, for mathematical reasons.
  * @author Richard White
  * @version 2018-05-08
  */
@@ -19,7 +19,7 @@ float minR = -2; // minimum Real Value. Graphed on x-axis.
 float maxR = 0.5;    // maximum Real value. Change to a smaller value to zoom in)
 float minI = -1;   // minimum Imaginary value, graphed on y-axis
 float maxI = 1;    // maximum Imaginary value
-int max_iteration = 300;  // Not recursing to infinity, so determines resolution
+int max_iteration = 512;  // Not recursing to infinity, so determines resolution
 int Px, Py, x, y, xtemp, i; 
 float cI, cR, ZI, ZR, oldZR;
 boolean inSet;
@@ -39,19 +39,25 @@ void draw()
     for (int c = 0; c < w; c++)  // ...an for every column of screen pixels
     {
       cR = map(c,0,w,minR,maxR); // calculate scaled real coordinate from this pixel
-      ZR = cR;                    // Real component of Z(0)
-      ZI = cI;                    // Imaginary comp of Z(0)
+      // Now that we've determined with coordinate we're evaluating, start iterating/recursing
+      // to determine if/when the Mandelbrot function will diverge beyond 4. (Why 4?)
+      ZR = 0;                   // Real component of Z(0)
+      ZI = 0;                   // Imaginary component of Z(0)
       // iterate
-      inSet = true;
+      inSet = true;              // Assume this c value belongs to the Mandelbrot set
+                                 // We'll know it doesn't if it diverges.
       for (i = 0; i < max_iteration; i++)
       {
-        if (ZR * ZR + ZI * ZI > 2 * 2)
+        if (ZR * ZR + ZI * ZI > 2 * 2)    // If we've gone beyond 2...
         {
           inSet = false;
           break;
         }
         else 
         {
+          // recalculate new values for next iteration based on complex number math:
+          // (a + bi)(c + di) = (ac - bd) + (bc + ad)i
+          // Z(n+1) = Z(n) + c, where Z and c are complex numbers
           oldZR = ZR;
           ZR = ZR * ZR - ZI * ZI + cR;
           ZI = 2 * oldZR * ZI + cI;
@@ -59,11 +65,11 @@ void draw()
       }
       if (inSet)
       {
-        // pass
+        // Don't need to draw it, background is black already
       }
       else
       {
-        stroke(255);
+        stroke(i, i, i);
         point(c,r);
       }
     }
