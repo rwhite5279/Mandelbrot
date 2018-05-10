@@ -1,5 +1,5 @@
 /**
- * Mandlebrot plotter, version 1
+ * Mandelbrot plotter, version 1
  * Based initially on pseudocode at https://en.wikipedia.org/wiki/Mandelbrot_set#Computer_drawings, 
  * but that pseudocode has errors.
  * Things to understand:
